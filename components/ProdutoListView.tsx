@@ -8,10 +8,13 @@ interface ProdutoListViewProps {
     className?: string;
 }
 
-const ProdutoListView: React.FC<ProdutoListViewProps> = ({ product, className }) => {
+const ProdutoListView: React.FC<ProdutoListViewProps> = 
+    ({ product, className }) => {
     return (
         <div className={clsx("card", className)}>
-            <img className="card-img-top" style={{ width: 120, margin: "2px 10px" }} src={product.image} alt={product.title} />
+            <img className="card-img-top"
+                style={{ width: 120, height: 120, margin: "2px 10px" }}
+                src={product.image} alt={product.title} />
             <div className="card-body">
                 <h5 className="card-title">
                     <span className="me-2">{product.title}</span>
