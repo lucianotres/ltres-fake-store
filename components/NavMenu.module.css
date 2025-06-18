@@ -1,0 +1,15 @@
+.topRow {
+    height: 3.5rem !important;
+    background-color: rgba(0,0,0,0.4) !important;
+}
+
+.navCollapse {
+    display: none !important;
+}
+
+@media (min-width: 641px) {
+    .navCollapse {
+        /* Never collapse the sidebar for wide screens */
+        display: block !important;
+    }
+}

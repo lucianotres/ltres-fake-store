@@ -1,14 +1,15 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { getProducts } from '@services/fakeStoreProducts';
+import { Product } from '@types/product';
 
 export default function Index() {
-  const [produtos, setProdutos] = useState([]);
+  const [produtos, setProdutos] = useState<Product[]>([]);
   
   useEffect(() => {
     getProducts()
       .then(setProdutos)
-  });
+  }, []);
 
   return (
     <main>
