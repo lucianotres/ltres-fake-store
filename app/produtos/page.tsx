@@ -1,7 +1,9 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { getProducts } from '@services/fakeStoreProducts';
-import { Product } from '@types/product';
+import { Product } from '@/types/product';
+import ProdutoListView from '@components/ProdutoListView';
+import styles from './page.module.css';
 
 export default function Index() {
   const [produtos, setProdutos] = useState<Product[]>([]);
@@ -13,16 +15,14 @@ export default function Index() {
 
   return (
     <main>
-        <h3>Fake Store - Produtos</h3>
-        <ol>
-          {produtos.map((produto) => (
-            <li key={produto.id}>
-              <h4>{produto.title}</h4>
-              <p>Preço: ${produto.price}</p>
-              <img src={produto.image} alt={produto.title} style={{ width: '100px' }} />
-            </li>
-          ))}
-        </ol>
+        <h1>Fake Store - Lista de Produtos</h1>
+
+        <button className="btn btn-success">Atualizar Lista</button>&nbsp;
+        <button className="btn btn-primary">Novo Produto</button>
+
+        {produtos.map((produto) => (
+          <ProdutoListView key={produto.id} product={produto} className={styles.produtoCard} />
+        ))}
     </main>
   );
 }

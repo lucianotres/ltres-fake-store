@@ -1,0 +1,9 @@
+.cardFooter {
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+}
+
+.cardFooter div:first-child {
+    flex: 1;
+}
