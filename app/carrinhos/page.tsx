@@ -2,25 +2,43 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, AppState } from "@/store/AppStore";
-import { CartStatus, fetchCarts } from "@/store/cartSlice";
+import { CartStatus, fetchCarts, mapProducts } from "@/store/cartSlice";
+import { fetchProducts, ProductStatus } from "@/store/productSlice";
+import { formatarDecimal } from "@/utils/numeros";
 import CartListView from "@components/CartListView";
 
 const Index: React.FC = () => {
     const { carts, status, erro, } = useSelector((state: AppState) => state.cart);
+    const productState = useSelector((state: AppState) => state.product);
     const dispatch = useDispatch<AppDispatch>();
 
     useEffect(() => {
-        if (status === CartStatus.IDLE) {
-            dispatch(fetchCarts())
+        if (productState.status === ProductStatus.IDLE && status === CartStatus.IDLE) {
+            carregaDados();
         }
-    }, [status, dispatch]);
+
+        if(productState.products.length > 0 && carts.length > 0)
+        {
+            dispatch(mapProducts(productState.products));
+        }
+    }, [status, dispatch, productState.status]);
+
+    const carregaDados = () => {
+        dispatch(fetchProducts());
+        dispatch(fetchCarts());
+    };
+
+    const total = productState.status !== ProductStatus.SUCCESS && status !== CartStatus.SUCCESS ?
+        0 : Math.round(carts.reduce((tot, c) => 
+            tot + c.products.reduce((ptot, p) => ptot + (p.total ?? 0), 0)
+        , 0) * 100) / 100; //arredonda 2 casas decimais
 
     return (<>
         <h1>Carrinhos de Compras</h1>
         <p>Lista de carrinhos cadastrados no sistema</p>
 
-        <button className="btn btn-success me-1">Atualizar Lista</button>
-        <button className="btn btn-primary">Novo Carrinho</button>
+        <button className="btn btn-success me-1" onClick={carregaDados}>Atualizar Lista</button>
+        <button className="btn btn-primary" onClick={() => alert("Não implementado ainda")}>Novo Carrinho</button>
 
         <table className="table">
             <thead>
@@ -45,7 +63,7 @@ const Index: React.FC = () => {
             <tfoot>
                 <tr>
                     <td colSpan={3} className="text-end">TOTAL:</td>
-                    <td>0</td>
+                    <td>{formatarDecimal(total)}</td>
                     <td>0</td>
                     <td></td>
                 </tr>

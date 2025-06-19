@@ -1,5 +1,6 @@
 import { getCarts } from "@/services/fakeStoreCarts";
 import { Cart } from "@/types/cart";
+import { Product } from "@/types/product";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
 export enum CartStatus {
@@ -26,11 +27,30 @@ export const fetchCarts = createAsyncThunk("car/fetchCarts", async () => {
     return response;
 });
 
-
-const userSlice = createSlice({
+const cartSlice = createSlice({
     name: "cart",
     initialState,
-    reducers: { },
+    reducers: {
+        mapProducts(state, action: PayloadAction<Product[]>) {
+            let novoCarts = state.carts.map(c => ({
+                ...c,
+                products: c.products.map(p => {
+                    const foundProduct = action.payload.find(w => w.id === p.productId);
+                    return {
+                        ...p,
+                        product: foundProduct,
+                        total: Math.round((foundProduct?.price ?? 0) * p.quantity * 100) / 100
+                    };
+                })
+            }));
+
+            console.log('mapProducts executado');
+            return {
+                ...state,
+                carts: novoCarts
+            }
+        }
+    },
     extraReducers(builder) {
     builder
         .addCase(fetchCarts.pending, (state) => {
@@ -45,8 +65,9 @@ const userSlice = createSlice({
         .addCase(fetchCarts.rejected, (state, action) => {
             state.status = CartStatus.FAILED;
             state.erro = action.error.message || "Falhou ao carregar carrinhos";
-        });
+        })
     }
 });
 
-export default userSlice.reducer;
+export const { mapProducts } = cartSlice.actions;
+export default cartSlice.reducer;

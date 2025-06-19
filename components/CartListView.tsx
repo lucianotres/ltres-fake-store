@@ -1,4 +1,5 @@
 import { Cart } from "@/types/cart";
+import { formatarDecimal } from "@/utils/numeros";
 
 interface CartListViewProps {
     cart: Cart;
@@ -7,15 +8,16 @@ interface CartListViewProps {
 
 const CartListView: React.FC<CartListViewProps> = 
     ({ cart, className }) => {
+    const total = cart.products.reduce((acc, p) => acc + (p.total ?? 0), 0);    
     return (
         <tr>
             <td>
-                <text>{cart.id}</text>&ensp;
+                <span>{cart.id}</span>&ensp;
                 {cart.userId === 0 && (<span className="badge bg-success">Meu</span>)}
             </td>
             {cart.products.length === 0 ? <td>Sem</td> : <td>{cart.products.length}</td>}
             <td>{cart.products.reduce((acc, p) => acc + p.quantity, 0)}</td>
-            <td>{0}</td>
+            <td>{formatarDecimal(total)}</td>
             <td>{0}</td>
             <td className="text-nowrap">
                 <button className="btn btn-primary btn-sm me-1">Ver</button>
