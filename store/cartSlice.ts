@@ -1,4 +1,4 @@
-import { getCart, getCarts, putCart } from "@/services/fakeStoreCarts";
+import { deleteCart, getCart, getCarts, putCart } from "@/services/fakeStoreCarts";
 import { Cart } from "@/types/cart";
 import { Product } from "@/types/product";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
@@ -71,6 +71,14 @@ export const updateCart = createAsyncThunk(
     }
 );
 
+export const removeCart = createAsyncThunk(
+    "cart/removeCart",
+    async (
+        cartId: number
+    ): Promise<number | undefined> => 
+    await deleteCart(cartId) ? cartId : undefined
+);
+
 const cartSlice = createSlice({
     name: "cart",
     initialState,
@@ -120,6 +128,16 @@ const cartSlice = createSlice({
             state.carts = [
                 ...state.carts.filter(w => w.id !== action.payload?.id),
                 action.payload
+            ]
+        })
+        .addCase(removeCart.fulfilled, (state, action: PayloadAction<number | undefined>) => {
+            if (!action.payload)
+                return;
+
+            state.status = CartStatus.SUCCESS;
+            state.erro = null;
+            state.carts = [
+                ...state.carts.filter(w => w.id !== action.payload)
             ]
         });
     }

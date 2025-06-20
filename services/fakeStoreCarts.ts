@@ -41,3 +41,13 @@ export const putCart = async (cart: Cart): Promise<Cart | undefined> => {
         return undefined;
     }
 }
+
+export const deleteCart = async (cartId: number): Promise<boolean> => {
+    try {
+        const response = await api.delete(`/${cartId}`);
+        return true;
+    } catch (error) {
+        console.error("Erro ao modificar carrinho:", error);
+        return false;
+    }
+}

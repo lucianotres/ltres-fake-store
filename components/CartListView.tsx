@@ -5,10 +5,11 @@ import { formatarDecimal } from "@/utils/numeros";
 interface CartListViewProps {
     cart: Cart;
     className?: string;
+    onRemove?: (cartId: number) => void;
 }
 
 const CartListView: React.FC<CartListViewProps> = 
-    ({ cart, className }) => {
+    ({ cart, className, onRemove }) => {
     const total = cart.products.reduce((acc, p) => acc + (p.total ?? 0), 0);    
     return (
         <tr>
@@ -24,7 +25,7 @@ const CartListView: React.FC<CartListViewProps> =
                 <Link href={`/carrinhos/${cart.id}`}>
                     <button className="btn btn-primary btn-sm me-1">Ver</button>
                 </Link>
-                <button className="btn btn-danger btn-sm">Remover</button>
+                <button className="btn btn-danger btn-sm" onClick={() => onRemove?.(cart.id)}>Remover</button>
             </td>
         </tr>
     )

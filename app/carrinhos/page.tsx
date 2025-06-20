@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, AppState } from "@/store/AppStore";
-import { CartStatus, fetchCarts } from "@/store/cartSlice";
+import { CartStatus, fetchCarts, removeCart } from "@/store/cartSlice";
 import { fetchProducts, ProductStatus } from "@/store/productSlice";
 import { formatarDecimal } from "@/utils/numeros";
 import CartListView from "@components/CartListView";
@@ -32,6 +32,10 @@ const Index: React.FC = () => {
             tot + c.products.reduce((ptot, p) => ptot + (p.total ?? 0), 0)
         , 0) * 100) / 100; //arredonda 2 casas decimais
 
+    const handleRemoveCart = (cartId: number) => {
+        dispatch(removeCart(cartId));
+    };
+
     return (<>
         <h1>Carrinhos de Compras</h1>
         <p>Lista de carrinhos cadastrados no sistema</p>
@@ -55,7 +59,9 @@ const Index: React.FC = () => {
                 {status === CartStatus.FAILED && <tr><td colSpan={5}>Falhou: {erro}</td></tr>}
                 {status === CartStatus.SUCCESS && 
                     carts.map((cart) => (
-                        <CartListView key={cart.id} cart={cart} />
+                        <CartListView key={cart.id} 
+                            cart={cart}
+                            onRemove={handleRemoveCart} />
                     ))
                 }
             </tbody>
