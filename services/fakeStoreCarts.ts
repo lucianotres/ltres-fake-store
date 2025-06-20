@@ -14,3 +14,13 @@ export const getCarts = async () => {
         return [];
     }
 };
+
+export const getCart = async (id: number): Promise<Cart | undefined> => {
+    try {
+        const response = await api.get<Cart>(`/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error("Erro ao retornar carrinho:", error);
+        return undefined;
+    }
+};

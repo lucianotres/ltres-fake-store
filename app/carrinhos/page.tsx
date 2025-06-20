@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, AppState } from "@/store/AppStore";
-import { CartStatus, fetchCarts, mapProducts } from "@/store/cartSlice";
+import { CartStatus, fetchCarts } from "@/store/cartSlice";
 import { fetchProducts, ProductStatus } from "@/store/productSlice";
 import { formatarDecimal } from "@/utils/numeros";
 import CartListView from "@components/CartListView";
@@ -13,19 +13,18 @@ const Index: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
 
     useEffect(() => {
-        if (productState.status === ProductStatus.IDLE && status === CartStatus.IDLE) {
-            carregaDados();
+        if (productState.status === ProductStatus.IDLE) {
+            dispatch(fetchProducts());
         }
 
-        if(productState.products.length > 0 && carts.length > 0)
-        {
-            dispatch(mapProducts(productState.products));
+        if (status === CartStatus.IDLE && productState.status === ProductStatus.SUCCESS) {
+            dispatch(fetchCarts({ products: productState.products }));
         }
-    }, [status, dispatch, productState.status]);
+    }, [status, productState.status]);
 
     const carregaDados = () => {
         dispatch(fetchProducts());
-        dispatch(fetchCarts());
+        dispatch(fetchCarts({ products: productState.products }));
     };
 
     const total = productState.status !== ProductStatus.SUCCESS && status !== CartStatus.SUCCESS ?

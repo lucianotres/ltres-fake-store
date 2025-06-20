@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Cart } from "@/types/cart";
 import { formatarDecimal } from "@/utils/numeros";
 
@@ -20,7 +21,9 @@ const CartListView: React.FC<CartListViewProps> =
             <td>{formatarDecimal(total)}</td>
             <td>{0}</td>
             <td className="text-nowrap">
-                <button className="btn btn-primary btn-sm me-1">Ver</button>
+                <Link href={`/carrinhos/${cart.id}`}>
+                    <button className="btn btn-primary btn-sm me-1">Ver</button>
+                </Link>
                 <button className="btn btn-danger btn-sm">Remover</button>
             </td>
         </tr>

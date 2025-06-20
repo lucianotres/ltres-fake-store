@@ -1,4 +1,4 @@
-import { getCarts } from "@/services/fakeStoreCarts";
+import { getCart, getCarts } from "@/services/fakeStoreCarts";
 import { Cart } from "@/types/cart";
 import { Product } from "@/types/product";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
@@ -22,35 +22,47 @@ const initialState: CartState = {
     erro: null,
 };
 
-export const fetchCarts = createAsyncThunk("car/fetchCarts", async () => {
-    const response = await getCarts();
-    return response;
+const mapeiaProdutoNoCarrinho = (cart: Cart, productsList: Product[]): Cart => ({
+    ...cart,
+    products: cart.products.map(p => {
+        const foundProduct = productsList.find(w => w.id === p.productId);
+        return {
+            ...p,
+            product: foundProduct,
+            total: Math.round((foundProduct?.price ?? 0) * p.quantity * 100) / 100
+        };
+    })
 });
+
+
+export const fetchCarts = createAsyncThunk(
+    "car/fetchCarts", 
+    async (
+        params: { products?: Product[] }
+    ): Promise<Cart[]> => {
+        const response = await getCarts();
+        return (response && params.products ?
+            response.map(m => mapeiaProdutoNoCarrinho(m, params.products)) :
+            []);
+    }
+);
+
+export const fetchCart = createAsyncThunk(
+    "cart/fetchCart",
+    async (
+        params: { cartId: number; products?: Product[] }
+    ): Promise<Cart | null> => {
+        const response = await getCart(params.cartId);
+        return (response && params.products ?
+            mapeiaProdutoNoCarrinho(response, params.products) :
+            null);
+    }
+);
 
 const cartSlice = createSlice({
     name: "cart",
     initialState,
-    reducers: {
-        mapProducts(state, action: PayloadAction<Product[]>) {
-            let novoCarts = state.carts.map(c => ({
-                ...c,
-                products: c.products.map(p => {
-                    const foundProduct = action.payload.find(w => w.id === p.productId);
-                    return {
-                        ...p,
-                        product: foundProduct,
-                        total: Math.round((foundProduct?.price ?? 0) * p.quantity * 100) / 100
-                    };
-                })
-            }));
-
-            console.log('mapProducts executado');
-            return {
-                ...state,
-                carts: novoCarts
-            }
-        }
-    },
+    reducers: { },
     extraReducers(builder) {
     builder
         .addCase(fetchCarts.pending, (state) => {
@@ -66,8 +78,28 @@ const cartSlice = createSlice({
             state.status = CartStatus.FAILED;
             state.erro = action.error.message || "Falhou ao carregar carrinhos";
         })
+        .addCase(fetchCart.pending, (state) => {
+            state.status = CartStatus.LOADING;
+            state.erro = null;
+        })
+        .addCase(fetchCart.rejected, (state, action) => {
+            state.status = CartStatus.FAILED;
+            state.erro = action.error.message || "Falhou ao buscar carrinho";
+        })
+        .addCase(fetchCart.fulfilled, (state, action: PayloadAction<Cart | null>) => {
+            if (action.payload === null)
+                return;
+            
+            state.status = CartStatus.SUCCESS;
+            state.erro = null;
+            state.carts = [
+                ...state.carts.filter(w => w.id !== action.payload?.id),
+                action.payload
+            ];
+
+            console.log("fetchCart: " + state.carts.map(m => m.id));
+        })
     }
 });
 
-export const { mapProducts } = cartSlice.actions;
 export default cartSlice.reducer;
