@@ -87,6 +87,9 @@ export default function Index() {
       <button className="btn btn-primary">Novo Produto</button>
     </>)}
 
+    {status === ProductStatus.LOADING && <h5 style={{margin: 4}}>Carregando...</h5>}
+    {status === ProductStatus.FAILED && <h5 style={{margin: 4}}>Falhou: {erro}</h5>}
+
     {products.map((produto) => (
       <ProdutoListView key={produto.id}
         className={styles.produtoCard}
