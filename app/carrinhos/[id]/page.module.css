@@ -4,4 +4,5 @@
 
 .carrTab th:first-child , .carrTab td:first-child {
     text-align: left;
+    max-width: 30vw;
 }

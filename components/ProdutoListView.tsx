@@ -6,10 +6,13 @@ import Styles from './ProdutoListView.module.css';
 interface ProdutoListViewProps {
     product: Product;
     className?: string;
+    onEditar?: (product: Product) => void
+    onRemover?: (productId: number) => void
+    onSelecionar?: (product: Product) => void
 }
 
 const ProdutoListView: React.FC<ProdutoListViewProps> = 
-    ({ product, className }) => {
+    ({ product, className, onEditar, onRemover, onSelecionar }) => {
     return (
         <div className={clsx("card", className)}>
             <img className="card-img-top"
@@ -29,8 +32,12 @@ const ProdutoListView: React.FC<ProdutoListViewProps> =
                             <text>&nbsp; em cotação: <strong>@cotacao.Cotacao.ConvertFromUSD(product.Price)?.ToString("#,##0.00")</strong></text>
                         }*/}
                     </div>
-                    <button className="btn btn-sm btn-primary">Editar</button>
-                    <button className="btn btn-sm btn-danger">Excluir</button>
+                    { onSelecionar ? (
+                        <button className="btn btn-sm btn-primary" onClick={() => onSelecionar?.(product)}>Selecionar</button>
+                    ) : (<>
+                        <button className="btn btn-sm btn-primary" onClick={() => onEditar?.(product)}>Editar</button>
+                        <button className="btn btn-sm btn-danger" onClick={() => onRemover?.(product.id)}>Excluir</button>
+                    </>)}
                 </div>
             </div>
         </div>

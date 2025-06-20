@@ -9,6 +9,7 @@ import { Cart, CartProduct } from "@/types/cart";
 import Produto from "./Produto";
 import styles from "./page.module.css";
 import clsx from "clsx";
+import Link from "next/link";
 
 interface CarrinhoParams {
   id: number;
@@ -71,7 +72,9 @@ const Carrinho: React.FC<CarrinhoProps> = ({ params }) => {
   return (<>
     <h3>Carrinho nº {id}</h3>
     <div>
-      <button className="btn btn-success">Adicionar Produto</button>
+      <Link href={`/produtos?cartId=${cart.id}`}>
+        <button className="btn btn-success">Adicionar Produto</button>
+      </Link>
       <div>Data: {formatarData(new Date(cart.date))}</div>
     </div>
     <div>
