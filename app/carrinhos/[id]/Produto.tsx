@@ -1,7 +1,9 @@
 'use client'
+import { AppState } from "@/store/AppStore";
 import { CartProduct } from "@/types/cart";
 import { formatarDecimal } from "@/utils/numeros";
 import { useRef, useState } from "react";
+import { useSelector } from "react-redux";
 
 type ProdutoProps = {
   cartProduct: CartProduct,
@@ -11,6 +13,7 @@ type ProdutoProps = {
 
 const Produto: React.FC<ProdutoProps> = 
   ({ cartProduct, onSalvar, onRemover }) => {
+  const { ultimaCotacao } = useSelector((state: AppState) => state.cotacao);
 
   const [quantidade, setQuantidade] = useState<number>(cartProduct.quantity);
   const [editando, setEditando] = useState<boolean>(false);
@@ -31,6 +34,12 @@ const Produto: React.FC<ProdutoProps> =
   const handleCancelar = () => {
     setEditando(false);
   }
+
+  const totalCotacao = Math.round(
+    (cartProduct.product?.price ?? 0) 
+    * quantidade 
+    * (ultimaCotacao?.ask ?? 0) * 100
+  ) / 100;
 
   return (
     <tr>
@@ -53,7 +62,7 @@ const Produto: React.FC<ProdutoProps> =
         </>)}
       </td>
       <td>$ {formatarDecimal((cartProduct.product?.price ?? 0) * quantidade)}</td>
-      <td></td>
+      <td>{formatarDecimal(totalCotacao)}</td>
       <td>
           <button className="btn btn-sm btn-danger" onClick={() => onRemover?.(cartProduct.productId)}>Remover</button>
       </td>

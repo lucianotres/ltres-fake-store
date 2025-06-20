@@ -5,11 +5,13 @@ import { AppDispatch, AppState } from "@/store/AppStore";
 import { CartStatus, fetchCarts, removeCart } from "@/store/cartSlice";
 import { fetchProducts, ProductStatus } from "@/store/productSlice";
 import { formatarDecimal } from "@/utils/numeros";
+import { Cart } from "@/types/cart";
 import CartListView from "@components/CartListView";
 
 const Index: React.FC = () => {
     const { carts, status, erro, } = useSelector((state: AppState) => state.cart);
     const productState = useSelector((state: AppState) => state.product);
+    const { ultimaCotacao } = useSelector((state: AppState) => state.cotacao);
     const dispatch = useDispatch<AppDispatch>();
 
     useEffect(() => {
@@ -27,10 +29,18 @@ const Index: React.FC = () => {
         dispatch(fetchCarts({ products: productState.products }));
     };
 
+    const totalCarrinho = (cart: Cart): number => 
+        cart.products.reduce((ptot, p) => ptot + (p.total ?? 0), 0);
+
     const total = productState.status !== ProductStatus.SUCCESS && status !== CartStatus.SUCCESS ?
         0 : Math.round(carts.reduce((tot, c) => 
-            tot + c.products.reduce((ptot, p) => ptot + (p.total ?? 0), 0)
+            tot + totalCarrinho(c)
         , 0) * 100) / 100; //arredonda 2 casas decimais
+
+    const totalCotacao = productState.status !== ProductStatus.SUCCESS && status !== CartStatus.SUCCESS ?
+        0 : Math.round(carts.reduce((tot, c) => 
+            tot + (Math.round(totalCarrinho(c) * (ultimaCotacao?.ask ?? 0) * 100) / 100)
+        , 0) * 100) / 100; 
 
     const handleRemoveCart = (cartId: number) => {
         dispatch(removeCart(cartId));
@@ -69,11 +79,13 @@ const Index: React.FC = () => {
                 <tr>
                     <td colSpan={3} className="text-end">TOTAL:</td>
                     <td>{formatarDecimal(total)}</td>
-                    <td>0</td>
+                    <td>{formatarDecimal(totalCotacao)}</td>
                     <td></td>
                 </tr>
             </tfoot>
         </table>
+
+        {ultimaCotacao && <p>Cotacao {ultimaCotacao?.name}: {ultimaCotacao?.ask}</p>}
     </>);
 };
 

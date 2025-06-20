@@ -1,6 +1,7 @@
 'use client';
 import type { Metadata, Viewport } from "next";
 import NavMenu from "@components/NavMenu";
+import EscolheCotacao from "@/components/EscolheCotacao";
 import { Provider } from "react-redux";
 import { store } from "@/store/AppStore";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -31,7 +32,7 @@ export default function RootLayout({
             </div>
             <main>
               <div className="top-row px-4 auth">
-                {/* todo: Falta logout e escolha de cotação aqui */}
+                <EscolheCotacao />
               </div>
               <article className="content px-4">
                 {children}
