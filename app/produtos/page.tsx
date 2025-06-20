@@ -23,10 +23,14 @@ export default function Index() {
     : undefined;
 
   useEffect(() => {
-    if (status !== ProductStatus.SUCCESS) {
+    if (status === ProductStatus.IDLE) {
       dispatch(fetchProducts());
     }
   }, [dispatch, status]);
+
+  const handleAtualizarLista = () => {
+    dispatch(fetchProducts());
+  };
 
   let handleSelecionar = cartId ? (product: Product) => {
     if (!cartId && cartState.status !== CartStatus.SUCCESS)
@@ -79,7 +83,7 @@ export default function Index() {
       <h1>Lista de Produtos</h1>
     ) : (<>
       <h1>Cadastro de Produtos</h1>
-      <button className="btn btn-success">Atualizar Lista</button>&nbsp;
+      <button className="btn btn-success" onClick={handleAtualizarLista}>Atualizar Lista</button>&nbsp;
       <button className="btn btn-primary">Novo Produto</button>
     </>)}
 
