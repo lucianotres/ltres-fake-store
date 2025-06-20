@@ -4,8 +4,8 @@ export interface CartProduct {
     productId: number;
     quantity: number;
 
-    product: Product | undefined;
-    total: number;
+    product?: Product;
+    total?: number;
 }
 
 export interface Cart {

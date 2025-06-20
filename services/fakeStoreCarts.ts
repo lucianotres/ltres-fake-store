@@ -24,3 +24,20 @@ export const getCart = async (id: number): Promise<Cart | undefined> => {
         return undefined;
     }
 };
+
+const prepararCartParaEnvio = (original: Cart): Cart => 
+({
+    ...original,
+    products: original.products.map(({ product, total, ...restante}) => restante)
+});
+
+
+export const putCart = async (cart: Cart): Promise<Cart | undefined> => {
+    try {
+        const response = await api.put<Cart>(`/${cart.id}`, prepararCartParaEnvio(cart));
+        return response.data;
+    } catch (error) {
+        console.error("Erro ao modificar carrinho:", error);
+        return undefined;
+    }
+}

@@ -1,11 +1,14 @@
 'use client'
-import React, { startTransition, Usable, useEffect, useRef, useState } from "react";
+import React, { Usable, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, AppState } from "@/store/AppStore";
-import { CartStatus, fetchCart } from "@/store/cartSlice";
+import { CartStatus, fetchCart, updateCart } from "@/store/cartSlice";
 import { fetchProducts, ProductStatus } from "@/store/productSlice";
-import { formatarData, formatarDecimal } from "@/utils/numeros";
-import { Cart } from "@/types/cart";
+import { formatarData } from "@/utils/numeros";
+import { Cart, CartProduct } from "@/types/cart";
+import Produto from "./Produto";
+import styles from "./page.module.css";
+import clsx from "clsx";
 
 interface CarrinhoParams {
   id: number;
@@ -39,6 +42,32 @@ const Carrinho: React.FC<CarrinhoProps> = ({ params }) => {
     return <p>Carregando carrinho...</p>
   }
 
+  const novoCarrinhoRemoveProduto = (idProductRemove: number, cartProductAdiciona?: CartProduct) => (
+    {
+      ...cart,
+      products: [
+        ...cart.products.filter(w => w.productId !== idProductRemove),
+        ...(cartProductAdiciona ? [cartProductAdiciona] : [])
+      ]
+    }
+  )
+
+  const handleSalvarProduto = (cartProduct: CartProduct) => {
+    dispatch(updateCart({
+      cart: novoCarrinhoRemoveProduto(cartProduct.productId, cartProduct),
+      products: productState.products
+    }));
+  }
+
+  const handleRemoverProduto = (productId: number) => {
+    dispatch(updateCart({
+      cart: novoCarrinhoRemoveProduto(productId),
+      products: productState.products
+    }));
+  }
+
+  const produtosOrdenados = [...cart.products].sort((a, b) => a.productId - b.productId);
+
   return (<>
     <h3>Carrinho nº {id}</h3>
     <div>
@@ -47,7 +76,7 @@ const Carrinho: React.FC<CarrinhoProps> = ({ params }) => {
     </div>
     <div>
       <h4>Produtos</h4>
-      <table className="table">
+      <table className={clsx("table", styles.carrTab)}>
         <thead>
           <tr>
             <th>Produto</th>
@@ -59,20 +88,10 @@ const Carrinho: React.FC<CarrinhoProps> = ({ params }) => {
           </tr>
         </thead>
         <tbody>                    
-          {cart.products.map(i => (
-            <tr key={i.productId}>
-              <td>{i.product?.title}</td>
-              <td>$ {formatarDecimal(i.product?.price ?? 0)}</td>
-              <td>
-                <span className="me-1">{i.quantity}</span>
-                <button className="btn btn-sm btn-primary">Alterar</button>
-              </td>
-              <td>$ {formatarDecimal(i.total)}</td>
-              <td></td>
-              <td>
-                  <button className="btn btn-sm btn-danger">Remover</button>
-              </td>
-            </tr>
+          {produtosOrdenados.map(i => (
+            <Produto key={i.productId} cartProduct={i} 
+              onSalvar={handleSalvarProduto}
+              onRemover={handleRemoverProduto} />
           ))}
         </tbody>
       </table>

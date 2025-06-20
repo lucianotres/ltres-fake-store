@@ -1,0 +1,7 @@
+.carrTab th, .carrTab td {
+    text-align: right;
+}
+
+.carrTab th:first-child , .carrTab td:first-child {
+    text-align: left;
+}

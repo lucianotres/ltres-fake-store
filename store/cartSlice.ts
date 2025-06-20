@@ -1,4 +1,4 @@
-import { getCart, getCarts } from "@/services/fakeStoreCarts";
+import { getCart, getCarts, putCart } from "@/services/fakeStoreCarts";
 import { Cart } from "@/types/cart";
 import { Product } from "@/types/product";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
@@ -59,6 +59,18 @@ export const fetchCart = createAsyncThunk(
     }
 );
 
+export const updateCart = createAsyncThunk(
+    "cart/updateCart",
+    async (
+        params: { cart: Cart, products?: Product[] }
+    ): Promise<Cart | undefined> => {
+        const response = await putCart(params.cart);
+        return (response && params.products ?
+            mapeiaProdutoNoCarrinho(response, params.products) :
+            undefined);
+    }
+);
+
 const cartSlice = createSlice({
     name: "cart",
     initialState,
@@ -99,6 +111,17 @@ const cartSlice = createSlice({
 
             console.log("fetchCart: " + state.carts.map(m => m.id));
         })
+        .addCase(updateCart.fulfilled, (state, action: PayloadAction<Cart | undefined>) => {
+            if (!action.payload)
+                return;
+
+            state.status = CartStatus.SUCCESS;
+            state.erro = null;
+            state.carts = [
+                ...state.carts.filter(w => w.id !== action.payload?.id),
+                action.payload
+            ]
+        });
     }
 });
 
