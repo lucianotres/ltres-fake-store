@@ -1,29 +1,27 @@
 'use client'
 import React, { Usable, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useSearchParams } from "next/navigation";
 import { AppDispatch, AppState } from "@/store/AppStore";
 import { CartStatus, fetchCart, updateCart } from "@/store/cartSlice";
 import { fetchProducts, ProductStatus } from "@/store/productSlice";
 import { formatarData } from "@/utils/numeros";
 import { Cart, CartProduct } from "@/types/cart";
 import Produto from "./Produto";
-import styles from "./page.module.css";
+import styles from "./Carrinho.module.css";
 import clsx from "clsx";
 import Link from "next/link";
 
-interface CarrinhoParams {
-  id: number;
-}
-
-interface CarrinhoProps {
-  params: Usable<CarrinhoParams>
-};
-
-const Carrinho: React.FC<CarrinhoProps> = ({ params }) => {
-  const { id } = React.use<CarrinhoParams>(params);
+const Carrinho: React.FC = () => {
   const { carts, status, erro } = useSelector((state: AppState) => state.cart);
   const productState = useSelector((state: AppState) => state.product);
   const dispatch = useDispatch<AppDispatch>();
+
+  const searchParams = useSearchParams();
+  const idParam = searchParams.get("id");
+  const id = idParam && !isNaN(Number(idParam))
+    ? Number(idParam)
+    : 0;
 
   const primeiraExecucao = useRef(true);
   const cart = carts.find(w => w.id == id);

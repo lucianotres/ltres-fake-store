@@ -30,7 +30,7 @@ const CartListView: React.FC<CartListViewProps> =
             <td>{formatarDecimal(total)}</td>
             <td>{formatarDecimal(totalCotacao)}</td>
             <td className="text-nowrap">
-                <Link href={`/carrinhos/${cart.id}`}>
+                <Link href={`/carrinho?id=${cart.id}`}>
                     <button className="btn btn-primary btn-sm me-1">Ver</button>
                 </Link>
                 <button className="btn btn-danger btn-sm" onClick={() => onRemove?.(cart.id)}>Remover</button>

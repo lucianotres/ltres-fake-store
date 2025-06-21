@@ -42,7 +42,7 @@ export const fetchCarts = createAsyncThunk(
     ): Promise<Cart[]> => {
         const response = await getCarts();
         return (response && params.products ?
-            response.map(m => mapeiaProdutoNoCarrinho(m, params.products)) :
+            response.map(m => params.products ? mapeiaProdutoNoCarrinho(m, params.products) : m) :
             []);
     }
 );
